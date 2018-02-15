@@ -1,21 +1,21 @@
-@media only screen and (min-width: 1200px) {
-	body {
-		background:url(k8em0.png) 0 0px;
+.k8em0 { width:600px; height:600px;
+		background:url(https://pbs.twimg.com/media/DVYyZPvX0AAo-dU.jpg:large) 600px 600px;
+}
+
+@media only screen and (min-width: 1201px) {
+	.k8em0 { width:600px; height:600px;
+		background:url(https://pbs.twimg.com/media/DVYyZPvX0AAo-dU.jpg:large) 0px 0px;
 	}
 }
 
-@media only screen and (min-width: 900px) {
-	body {
-		background:url(k8em0.png) 600 0px;
+@media only screen and (min-width: 901px) {
+	.k8em0 { width:600px; height:600px;
+		background:url(https://pbs.twimg.com/media/DVYyZPvX0AAo-dU.jpg:large) 600px 0px;
 	}
 }
 
-@media only screen and (min-width: 600px) {
-	body {
-		background:url(k8em0.png) 600 0px;
+@media only screen and (min-width: 601px) {
+	.k8em0 { width:600px; height:600px;
+		background:url(https://pbs.twimg.com/media/DVYyZPvX0AAo-dU.jpg:large) 0px 600px;
 	}
-}
-
-body {
-		background:url(k8em0.png) 600 600px;
 }
