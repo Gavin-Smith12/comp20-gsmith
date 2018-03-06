@@ -2,7 +2,7 @@ var myLat = 0;
 var myLng = 0;
 var me = new google.maps.LatLng(myLat, myLng);
 var myOptions = {
-        zoom: 15, 
+        zoom: 16, 
         center: me,
         mapTypeId: google.maps.MapTypeId.ROADMAP
 };
@@ -11,11 +11,16 @@ var marker;
 var infowindow = new google.maps.InfoWindow();
 var short = Infinity;
 
+/* Function that gets called in the html, creates a new map and calls 
+   helper functions. */
+
 function init() {
         map = new google.maps.Map(document.getElementById("map_canvas"),
         myOptions);
         getMyLocation();
 }
+
+/* Gets the lat and long. */
 
 function getMyLocation() {
         if (navigator.geolocation) { 
@@ -31,10 +36,15 @@ function getMyLocation() {
         }
 }
 
+/* Creates the map and has it pan to my location. */
+
 function renderMap() {
         me = new google.maps.LatLng(myLat, myLng);
         map.panTo(me);
 }
+
+/* Calls the XMLHttpRequest and checks the ready state and passes the parsed 
+   JSON */
 
 function getData() {
         var request = new XMLHttpRequest();
@@ -44,59 +54,64 @@ function getData() {
                 if(request.readyState == 4 && request.status == 200) {
                         data = request.responseText;
                         loc = JSON.parse(data);
-                        callPosition(loc, myLat, myLng);
+                        callPosition(loc);
                 }
         } 
 }
 
-function callPosition(loc, myLat, myLng) {
+/* Checks to see if im a passenger or a driver */
+
+function callPosition(loc) {
         if(loc.drivers) {
-                createDrivers(loc, myLat, myLng);
+                createDrivers(loc);
         }
         else if(loc.passengers) {
-                createPassengers(loc, myLat, myLng);
+                createPassengers(loc);
         }    
 }
+
+/* If im a passenger iterates through the list of drivers and puts a marker
+   at their locations and adds an info window for each of them and me */
 
 function createDrivers(loc) {
         var me = new google.maps.LatLng(myLat, myLng);
         for(count = 0; count < loc.drivers.length; count++) {
-                var pasLoc = new google.maps.LatLng(loc.drivers[count].lat,
+                var driLoc = new google.maps.LatLng(loc.drivers[count].lat,
                 loc.drivers[count].lng);
                 var drivers = new google.maps.Marker({
-                        position: pasLoc,
+                        position: driLoc,
                         icon: 'car.png',
                         title: "Username: " + loc.passengers[count].username + 
                             " Distance: "
-                               + computeDistance(me, pasLoc).toFixed(3)
+                               + computeDistance(me, driLoc).toFixed(3)
                                + " miles"
                 });
                 drivers.setMap(map);
-
-               google.maps.event.addListener(drivers, 'click', function() {
-                        infowindow.setContent(drivers.title);
-                        infowindow.open(map, drivers);
-                });
+                createInfo(drivers);
         }
         marker = new google.maps.Marker({
                 position: me,
-                icon: 'passenger.png',
+                icon: {
+                    url: 'passenger.png', 
+                    scaledSize: new google.maps.Size(50,50)
+                },
                 title: "Username: bomkcQM8oI Closest Car: " +
                 short.toFixed(3) + " miles"            
         });
         marker.setMap(map);
                 
-        google.maps.event.addListener(marker, 'click', function() {
-                infowindow.setContent(marker.title);
-                infowindow.open(map, marker);
-        });
+        createInfo(marker);
 }
 
-function createPassengers(loc, myLat, myLng) {
+/* If im a driver iterates through the list of passengers and puts a marker
+   at their locations and adds an info window for each of them and me */
+
+function createPassengers(loc) {
         var me = new google.maps.LatLng(myLat, myLng);
         for(count = 0; count < loc.passengers.length; count++) {
                 var pasLoc = new google.maps.LatLng(loc.passengers[count].lat,
                 loc.passengers[count].lng);
+
                 var passenger = new google.maps.Marker({
                         position: pasLoc,
                         icon: {
@@ -110,11 +125,7 @@ function createPassengers(loc, myLat, myLng) {
                                + " miles"
                 });
                 passenger.setMap(map);
-
-               google.maps.event.addListener(passenger, 'click', function() {
-                        infowindow.setContent(passenger.title);
-                        infowindow.open(map, passenger);
-                });
+                createInfo(passenger);
         }
         marker = new google.maps.Marker({
                 position: me,
@@ -124,11 +135,20 @@ function createPassengers(loc, myLat, myLng) {
         });
         marker.setMap(map);
                 
-        google.maps.event.addListener(marker, 'click', function() {
-                infowindow.setContent(marker.title);
-                infowindow.open(map, marker);
-        });
+        createInfo(marker);
 }
+
+/* Creates info window for the passed in object */
+
+function createInfo(info) {
+    google.maps.event.addListener(info, 'click', function() {
+            console.log(info.title);
+            infowindow.setContent(info.title);
+            infowindow.open(map, info);
+    });
+}
+
+/* Computes the distance between two latlngs objects */
 
 function computeDistance(me, pasLoc) {
         var distance = 
@@ -141,9 +161,12 @@ function computeDistance(me, pasLoc) {
 
 }
 
+/* Posts my username and position to the server */
+
 function postInfo(request) {
         request.setRequestHeader("Content-type",
         "application/x-www-form-urlencoded");
         request.send("username=" + "bomkcQM8oI" + "&lat=" + myLat
         + "&lng=" + myLng);
 } 
+
