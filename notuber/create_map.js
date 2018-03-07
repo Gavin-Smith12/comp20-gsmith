@@ -62,7 +62,7 @@ function getData() {
 /* Checks to see if im a passenger or a driver */
 
 function callPosition(loc) {
-        if(loc.drivers) {
+        if(loc.vehicles) {
                 createDrivers(loc);
         }
         else if(loc.passengers) {
@@ -75,13 +75,13 @@ function callPosition(loc) {
 
 function createDrivers(loc) {
         var me = new google.maps.LatLng(myLat, myLng);
-        for(count = 0; count < loc.drivers.length; count++) {
-                var driLoc = new google.maps.LatLng(loc.drivers[count].lat,
-                loc.drivers[count].lng);
+        for(count = 0; count < loc.vehicles.length; count++) {
+                var driLoc = new google.maps.LatLng(loc.vehicles[count].lat,
+                loc.vehicles[count].lng);
                 var drivers = new google.maps.Marker({
                         position: driLoc,
                         icon: 'car.png',
-                        title: "Username: " + loc.passengers[count].username + 
+                        title: "Username: " + loc.vehicles[count].username + 
                             " Distance: "
                                + computeDistance(me, driLoc).toFixed(3)
                                + " miles"
@@ -142,7 +142,6 @@ function createPassengers(loc) {
 
 function createInfo(info) {
     google.maps.event.addListener(info, 'click', function() {
-            console.log(info.title);
             infowindow.setContent(info.title);
             infowindow.open(map, info);
     });
