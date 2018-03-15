@@ -11,8 +11,13 @@
         $(document).ready(function() {
                 newInfo = document.getElementById("log");
                 output = "";
+                var numArray = [];
                 for(var i = 0; i < localStorage.length; i++) {
-                    output = "<div>" + localStorage[localStorage.key(i)] + "</div>" + output;
+                    numArray.push(localStorage.key(i));
+                }
+                numArray.sort();
+                for(var j = 0; j < numArray.length; j++) {
+                    output = "<div>" + localStorage[numArray[j]] + "</div>" + output;
                 }
 
                 newInfo.innerHTML = output;
